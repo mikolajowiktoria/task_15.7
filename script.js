@@ -1,6 +1,6 @@
-StopWatch = React.createClass({
-    getInitialState: function() {
-        return {
+class Stopwatch extends React.Component {
+    constructor(display) {
+        reset() {
             running: false,
             display: display,
             this.reset(),
@@ -65,8 +65,7 @@ StopWatch = React.createClass({
 
     var stopwatch = new StopWatch(document.querySelector('.stopwatch'));
 
-    var startButton = document.getElementById('start');
-    startButton.addEventListener('click', () => stopwatch.start());
+    <button className="start" onClick={() => this.start()}>Start</button>
 
     var stopButton = document.getElementById('stop');
     stopButton.addEventListener('click', () => stopwatch.stop());
