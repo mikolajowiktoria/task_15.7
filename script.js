@@ -1,94 +1,87 @@
 class Stopwatch extends React.Component {
-    constructor(display) {
-        reset() {
-            running: false,
-            display: display,
-            this.reset(),
-            this.print(this.times);
-        };
-    },
-    
-    reset: function() {
-        this.times({
-            minutes: 0,
-            seconds: 0,
-            miliseconds: 0
-        });
-    },
-    
-    print: function() {
-        this.display.innerText = this.format(this.times);
-    },
-    
-    format: function(times) {
-        return {                                                                   (${pad0(times.minutes)}:${pad0(times.seconds)}:${pad0(Math.floor(times.miliseconds))});
-        }
-    },
+  constructor(display) {
+    //field in which our timer is to appear
+    super(display);
+    this.state = {
+      running: false,
+      display: display,
+      minutes: 0,
+      seconds: 0,
+      miliseconds: 0
+    };
+  }
 
-    start: function() {
-        if (!this.running) {
-            this.running = true;
-            this.watch = setInterval( () => this.step(), 10);
-        }
-    },
-    
-    step: function() {
-        if (!this.running) return;
-        this.calculate();
-        this.print();
-    },
-    
-    calculate: function() {
-        this.times.miliseconds += 1;
-        if (this.times.miliseconds >= 100) {
-            this.times.seconds += 1;
-            this.times.miliseconds = 0;
-        }
-        if (this.times.seconds >= 60) {
-            this.times.minutes += 1;
-            this.times.seconds = 0;
-        }
-    },
-    
-    stop: function() {
-        this.running = false;
-        clearInterval(this.watch);
+  reset() {
+    this.setState({
+      minutes: 0,
+      seconds: 0,
+      miliseconds: 0
+    });
+  }
+
+  format(times) {
+    return `${pad0(this.state.minutes)}:${pad0(this.state.seconds)}:${pad0(
+      Math.floor(this.state.miliseconds)
+    )}`;
+  }
+
+  start() {
+    if (!this.running) {
+      (this.running = true), (this.watch = setInterval(() => this.step(), 10));
     }
+  }
 
-    pad0: function(value) {
-        var result = value.toString();
-        if (result.length < 2) {
-            result = '0' + result;
-        }
-        return result;
+  step() {
+    if (!this.running) return;
+    this.calculate();
+  }
+
+  calculate() {
+    let { miliseconds, seconds, minutes } = this.state;
+
+    miliseconds += 1;
+    if (miliseconds >= 100) {
+      seconds += 1;
+      miliseconds = 0;
     }
+    if (seconds >= 60) {
+      minutes += 1;
+      seconds = 0;
+    }
+    this.setState({
+      miliseconds: miliseconds,
+      seconds: seconds,
+      minutes: minutes
+    });
+  }
 
-    var stopwatch = new StopWatch(document.querySelector('.stopwatch'));
+  stop() {
+    this.running = false;
+    clearInterval(this.watch);
+  }
 
-    <button className="start" onClick={() => this.start()}>Start</button>
+  render() {
+    return (
+      <div>
+        <nav className="controls">
+          <button className="start" onClick={() => this.start()}>Start</button>
+          <button className="stop" onClick={() => this.stop()}>Stop</button>
+        </nav>
+        <div className={"stopwatch"}>{this.format()}</div>
+      </div>
+    );
+  }
+}
 
-    var stopButton = document.getElementById('stop');
-    stopButton.addEventListener('click', () => stopwatch.stop());
+const stopwatch = new Stopwatch(document.querySelector(".stopwatch"));
 
-    render: function() {
-        var styles = {
-            margin: '0 auto',
-            textAlign: 'center',
-            width: 90%;
-        };
-        
-        return (
-            <div style={styles}>
-                <nav className='controls'>
-                    <a href='#' className='button' id='start'>Start</a>
-                    <a href='#' className='button' id='stop'>Start</a>
-                </nav>
-                <div className='stopwatch'></div>
-                <ul className='results'></ul>
-            </div>
-        );
-    }    
-});
+function pad0(value) {
+  let result = value.toString();
+  if (result.length < 2) {
+    result = "0" + result;
+  }
+  return result;
+}
 
-var element = React.createElement(App);
-ReactDOM.render(element, document.getElementById('app'));
+const app = document.getElementById("app");
+ReactDOM.render(<Stopwatch />, app);
